@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
+use Behat\Gherkin\Node\TableNode;
 use TalkingBit\BddExample\FileReader\CSVFileReader;
 use TalkingBit\BddExample\Persistence\InMemoryProductRepository;
 use TalkingBit\BddExample\Product;
@@ -42,15 +43,20 @@ class FeatureContext implements Context
     /**
      * @Given I have a file named :pathToFile with the new prices
      */
-    public function iHaveAFileNamedWithTheNewPrices(string $pathToFile)
+    public function iHaveAFileNamedWithTheNewPrices(FilePath $pathToFile, TableNode $table)
     {
-        $data = <<<EOD
-product_id,price
-101,17
-103,23
-EOD;
-        file_put_contents($pathToFile, $data);
-        $this->pathToFile = new FilePath($pathToFile);
+        $this->pathToFile = $pathToFile;
+        $file = fopen($this->pathToFile->path(), 'w');
+
+        $header = true;
+        foreach ($table as $row) {
+            if ($header) {
+                fputcsv($file, array_keys($row));
+                $header = false;
+            }
+            fputcsv($file, $row);
+        }
+        fclose($file);
     }
 
     /**
@@ -100,5 +106,11 @@ EOD;
     public function thereIsAnErrorInTheSystem()
     {
         throw new PendingException();
+    }
+
+    /** @Transform :pathToFile */
+    public function getFilePath(string $pathToFile): FilePath
+    {
+        return new FilePath('/var/tmp/' . $pathToFile);
     }
 }

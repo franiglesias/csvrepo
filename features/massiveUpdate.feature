@@ -6,6 +6,9 @@ Feature: Massively update product prices when needed
   Scenario: Update uploading a csv file with new prices
     Given There are current prices in the system
     And I have a file named "prices_update.csv" with the new prices
+      | product_id | price |
+      | 101        | 17    |
+      | 103        | 23    |
     When I upload the file
     Then Changes are applied to the current prices
 
