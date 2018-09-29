@@ -22,11 +22,13 @@ class Product
     {
     }
 
-    /**
-     * @return float
-     */
     public function price(): float
     {
         return $this->price;
+    }
+
+    public function id(): int
+    {
+        return $this->id;
     }
 }

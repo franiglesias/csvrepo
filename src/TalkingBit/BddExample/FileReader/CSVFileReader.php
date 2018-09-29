@@ -8,6 +8,14 @@ class CSVFileReader implements FileReader
 {
     public function readFrom(FilePath $filePath): array
     {
-        return [];
+        $data = [];
+        $csvFile = fopen($filePath->path(), 'r');
+        $headers = fgetcsv($csvFile);
+        while ($row = fgetcsv($csvFile)) {
+            $data[] = array_combine($headers, $row);
+        }
+        fclose($csvFile);
+
+        return $data;
     }
 }

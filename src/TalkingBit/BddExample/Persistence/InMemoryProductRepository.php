@@ -7,13 +7,15 @@ use TalkingBit\BddExample\ProductRepository;
 
 class InMemoryProductRepository implements ProductRepository
 {
+    private $products;
+
     public function getById(string $productId): Product
     {
-        return new Product(101, 'Product 1', 10);
+        return $this->products[$productId];
     }
 
     public function store(Product $product): void
     {
-        // TODO: Implement store() method.
+        $this->products[$product->id()] = $product;
     }
 }
