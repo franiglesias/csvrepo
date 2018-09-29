@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\TableNode;
+use PHPUnit\Framework\Assert;
 use TalkingBit\BddExample\FileReader\CSVFileReader;
 use TalkingBit\BddExample\Persistence\InMemoryProductRepository;
 use TalkingBit\BddExample\Product;
@@ -34,10 +35,16 @@ class FeatureContext implements Context
     /**
      * @Given There are current prices in the system
      */
-    public function thereAreCurrentPricesInTheSystem()
+    public function thereAreCurrentPricesInTheSystem(TableNode $productTable)
     {
-        $this->productRepository->store(new Product(101, 10.25));
-        $this->productRepository->store(new Product(102, 14.95));
+        foreach ($productTable as $productRow) {
+            $product = new Product(
+                $productRow['id'],
+                $productRow['name'],
+                $productRow['price']
+            );
+            $this->productRepository->store($product);
+        }
     }
 
     /**
@@ -70,9 +77,12 @@ class FeatureContext implements Context
     /**
      * @Then Changes are applied to the current prices
      */
-    public function changesAreAppliedToTheCurrentPrices()
+    public function changesAreAppliedToTheCurrentPrices(TableNode $productTable)
     {
-        throw new PendingException();
+        foreach ($productTable as $productRow) {
+            $product = $this->productRepository->getById($productRow['id']);
+            Assert::assertEquals($productRow['price'], $product->price());
+        }
     }
 
     /**

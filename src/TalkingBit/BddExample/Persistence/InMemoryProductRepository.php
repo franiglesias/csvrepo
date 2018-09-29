@@ -9,7 +9,7 @@ class InMemoryProductRepository implements ProductRepository
 {
     public function getById(string $productId): Product
     {
-        return new Product(101, 10);
+        return new Product(101, 'Product 1', 10);
     }
 
     public function store(Product $product): void
