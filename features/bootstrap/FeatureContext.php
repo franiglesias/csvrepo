@@ -88,10 +88,20 @@ class FeatureContext implements Context
     /**
      * @Given I have a file named :pathToFile with invalid data
      */
-    public function iHaveAFileNamedWithInvalidData(string $pathToFile)
+    public function iHaveAFileNamedWithInvalidData(FilePath $pathToFile, TableNode $table)
     {
         $this->pathToFile = $pathToFile;
-        throw new PendingException();
+        $file = fopen($this->pathToFile->path(), 'w');
+
+        $header = true;
+        foreach ($table as $row) {
+            if ($header) {
+                fputcsv($file, array_keys($row));
+                $header = false;
+            }
+            fputcsv($file, $row);
+        }
+        fclose($file);
     }
 
     /**

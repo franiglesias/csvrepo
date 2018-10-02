@@ -17,7 +17,7 @@ class CSVFileReaderSpec extends ObjectBehavior
     {
         $pathToFile = '/var/tmp/one_line_file.csv';
         $data = <<< EOD
-101, 10
+101,10
 EOD;
 
         touch('' . $pathToFile);

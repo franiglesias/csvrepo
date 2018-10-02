@@ -14,8 +14,9 @@ class CSVFileReader implements FileReader
         while ($row = fgetcsv($csvFile)) {
             $data[] = array_combine($headers, $row);
         }
-        fclose($csvFile);
-
+        if (empty($data) && $headers) {
+            return [$headers];
+        }
         return $data;
     }
 }

@@ -20,6 +20,7 @@ class Product
 
     public function setPrice(float $price): void
     {
+        $this->price = $price;
     }
 
     public function price(): float
