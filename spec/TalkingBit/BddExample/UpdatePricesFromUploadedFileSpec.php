@@ -3,11 +3,10 @@
 namespace spec\TalkingBit\BddExample;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Prophet;
 use RuntimeException;
 use TalkingBit\BddExample\FileReader\FileReader;
-use TalkingBit\BddExample\ProductRepository;
 use TalkingBit\BddExample\Product;
+use TalkingBit\BddExample\ProductRepository;
 use TalkingBit\BddExample\UpdatePricesFromUploadedFile;
 use TalkingBit\BddExample\VO\FilePath;
 
@@ -54,5 +53,20 @@ class UpdatePricesFromUploadedFileSpec extends ObjectBehavior
         $productRepository->getById(101)->shouldBeCalled()->willReturn($product);
 
         $this->usingFile($filePath);
+    }
+
+    public function it_should_fail_if_file_has_not_the_right_structure(
+        FileReader $fileReader,
+        FilePath $filePath
+    ) {
+        $fileReader
+            ->readFrom($filePath)
+            ->willReturn(
+                [
+                    ['product_id' => 101, 'product_name' => 'Product 1']
+                ]
+            );
+
+        $this->shouldThrow(\UnexpectedValueException::class)->duringUsingFile($filePath);
     }
 }
