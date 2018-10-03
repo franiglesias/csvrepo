@@ -115,7 +115,7 @@ class FeatureContext implements Context
      */
     public function thereIsAnErrorInTheSystem()
     {
-        //unlink($this->pathToFile->path());
+        unlink($this->pathToFile->path());
     }
 
     /** @Transform :pathToFile */

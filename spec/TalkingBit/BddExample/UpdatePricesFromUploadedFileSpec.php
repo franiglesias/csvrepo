@@ -69,4 +69,16 @@ class UpdatePricesFromUploadedFileSpec extends ObjectBehavior
 
         $this->shouldThrow(\UnexpectedValueException::class)->duringUsingFile($filePath);
     }
+
+    public function it_should_fail_if_file_does_not_exist(
+        FileReader $fileReader,
+        FilePath $filePath
+    ) {
+        $fileReader
+            ->readFrom($filePath)
+            ->willThrow(RuntimeException::class);
+
+        $exception = new RuntimeException('Something went wrong and it was not possible to update prices');
+        $this->shouldThrow($exception)->duringUsingFile($filePath);
+    }
 }

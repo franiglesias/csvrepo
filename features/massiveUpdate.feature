@@ -51,8 +51,8 @@ Feature: Massively update product prices when needed
       | product_id | new_price |
       | 101        | 17        |
       | 103        | 23        |
-    When I upload the file
     And There is an error in the system
+    When I upload the file
     Then A message is shown explaining the problem
       """
       Something went wrong and it was not possible to update prices
