@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\TalkingBit\BddExample\Persistence;
+namespace Spec\TalkingBit\BddExample\Persistence;
 
 use PhpSpec\ObjectBehavior;
 use TalkingBit\BddExample\Product;

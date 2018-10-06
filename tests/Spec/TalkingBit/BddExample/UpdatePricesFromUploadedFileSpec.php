@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\TalkingBit\BddExample;
+namespace Spec\TalkingBit\BddExample;
 
 use PhpSpec\ObjectBehavior;
 use RuntimeException;

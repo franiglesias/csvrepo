@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\TalkingBit\BddExample\FileReader;
+namespace Spec\TalkingBit\BddExample\FileReader;
 
 use PhpSpec\ObjectBehavior;
 use TalkingBit\BddExample\FileReader\FileReader;

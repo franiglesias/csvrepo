@@ -1,0 +1,16 @@
+default:
+  autoload:
+    '': '%paths.base%/tests'
+  suites:
+    products:
+      paths:
+      - '%paths.base%/tests/Acceptance/Product/Features'
+      contexts:
+      - Acceptance\Product\Context\MassiveUpdateContext
+
+    end_to_end:
+      paths:
+      - '%paths.base%/tests/Acceptance/Product/Features'
+      contexts:
+      - Acceptance\EndToEnd\Context\MassiveUpdateContext
+

@@ -38,7 +38,7 @@ class UpdatePricesFromUploadedFile
 
     private function checkIsAValidDataStructure($row): void
     {
-        if (! isset($row['product_id']) || ! isset($row['new_price'])) {
+        if (! isset($row['product_id'], $row['new_price'])) {
             throw new UnexpectedValueException('The file doesn\'t contain valid data to update prices');
         }
     }

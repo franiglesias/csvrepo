@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\TalkingBit\BddExample\VO;
+namespace Spec\TalkingBit\BddExample\VO;
 
 use PhpSpec\ObjectBehavior;
 use TalkingBit\BddExample\VO\FilePath;

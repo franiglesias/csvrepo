@@ -1,5 +1,7 @@
 <?php
 
+namespace Acceptance\Product\Context;
+
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
@@ -10,17 +12,18 @@ use TalkingBit\BddExample\Product;
 use TalkingBit\BddExample\ProductRepository;
 use TalkingBit\BddExample\UpdatePricesFromUploadedFile;
 use TalkingBit\BddExample\VO\FilePath;
+use Throwable;
 
 /**
  * Defines application features from the specific context.
  */
-class FeatureContext implements Context
+class MassiveUpdateContext implements Context
 {
     /** @var string */
     private $pathToFile;
     /** @var UpdatePricesFromUploadedFile */
     private $updatePricesFromUploadedFile;
-    /** @var ProductRepository  */
+    /** @var ProductRepository */
     private $productRepository;
     /** @var Throwable */
     private $lastException;
@@ -37,7 +40,7 @@ class FeatureContext implements Context
     /**
      * @Given There are current prices in the system
      */
-    public function thereAreCurrentPricesInTheSystem(TableNode $productTable)
+    public function thereAreCurrentPricesInTheSystem(TableNode $productTable): void
     {
         foreach ($productTable as $productRow) {
             $product = new Product(
@@ -47,21 +50,36 @@ class FeatureContext implements Context
             );
             $this->productRepository->store($product);
         }
+
+        $this->assertTheseProductsAreInTheRepository($productTable);
     }
 
     /**
-     * @Given I have a file named :pathToFile with the new prices
+     * @Given /I have a file named "([^"]+)" with (.*)/
      */
-    public function iHaveAFileNamedWithTheNewPrices(FilePath $pathToFile, TableNode $table)
+    public function iHaveAFileNamedWithInvalidData(FilePath $pathToFile, TableNode $table): void
     {
         $this->pathToFile = $pathToFile;
         $this->createCsvFileWithDataFromTable($this->pathToFile->path(), $table);
+
+        Assert::assertFileExists($pathToFile->path());
+    }
+
+    /**
+     * @Given There is an error in the system
+     */
+    public function thereIsAnErrorInTheSystem(): void
+    {
+        $path = $this->pathToFile->path();
+        unlink($this->pathToFile->path());
+
+        Assert::assertFileNotExists($path);
     }
 
     /**
      * @When I upload the file
      */
-    public function iUploadTheFile()
+    public function iUploadTheFile(): void
     {
         try {
             $this->updatePricesFromUploadedFile->usingFile($this->pathToFile);
@@ -71,54 +89,23 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Then Changes are applied to the current prices
-     */
-    public function changesAreAppliedToTheCurrentPrices(TableNode $productTable)
-    {
-        foreach ($productTable as $productRow) {
-            $product = $this->productRepository->getById($productRow['id']);
-            Assert::assertEquals($productRow['price'], $product->price());
-        }
-    }
-
-    /**
-     * @Given I have a file named :pathToFile with invalid data
-     */
-    public function iHaveAFileNamedWithInvalidData(FilePath $pathToFile, TableNode $table)
-    {
-        $this->pathToFile = $pathToFile;
-        $this->createCsvFileWithDataFromTable($this->pathToFile->path(), $table);
-    }
-
-    /**
      * @Then A message is shown explaining the problem
      */
-    public function aMessageIsShownExplainingTheProblem(PyStringNode $expectedMessage)
+    public function aMessageIsShownExplainingTheProblem(PyStringNode $expectedMessage): void
     {
         $message = $this->lastException->getMessage();
         Assert::assertEquals($expectedMessage->getRaw(), $message);
     }
 
     /**
-     * @Then Changes are not applied to the current prices
+     * @Then /Changes are (not )?applied to the current prices/
      */
-    public function changesAreNotAppliedToTheCurrentPrices(TableNode $productTable)
+    public function changesAreAppliedOrNotToTheCurrentPrices(TableNode $productTable): void
     {
-        foreach ($productTable as $productRow) {
-            $product = $this->productRepository->getById($productRow['id']);
-            Assert::assertEquals($productRow['price'], $product->price());
-        }
+        $this->assertTheseProductsAreInTheRepository($productTable);
     }
 
-    /**
-     * @When There is an error in the system
-     */
-    public function thereIsAnErrorInTheSystem()
-    {
-        unlink($this->pathToFile->path());
-    }
-
-    /** @Transform :pathToFile */
+    /** @Transform /([^"]+)/ */
     public function getFilePath(string $pathToFile): FilePath
     {
         $fullPathToFile = '/var/tmp/' . $pathToFile;
@@ -140,5 +127,13 @@ class FeatureContext implements Context
             fputcsv($file, $row);
         }
         fclose($file);
+    }
+
+    private function assertTheseProductsAreInTheRepository(TableNode $productTable): void
+    {
+        foreach ($productTable as $productRow) {
+            $storedProduct = $this->productRepository->getById($productRow['id']);
+            Assert::assertEquals($productRow['price'], $storedProduct->price());
+        }
     }
 }

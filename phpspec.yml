@@ -1,1 +1,7 @@
 formatter.name: pretty
+
+suites:
+  product:
+    spec_prefix: Spec
+    src_path: '%paths.config%/src'
+    spec_path: '%paths.config%/tests'
